@@ -1,6 +1,5 @@
 import { header, footer } from "./headerFooter.js";
 document.addEventListener("DOMContentLoaded", function () {
-  const token = window.localStorage.getItem("token");
 
   document.body.insertAdjacentHTML("afterbegin", header);
   // Page principale ---//
@@ -65,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
       </form>
     </section>
   `;
-  const mainElement = document.querySelector("main");
+  const mainElement = document.querySelector("main")
   mainElement.insertAdjacentHTML("beforeend", mainContent);
 
   const openModal1 = document.querySelector(".open-modal-intro");
@@ -79,8 +78,9 @@ document.addEventListener("DOMContentLoaded", function () {
     event.preventDefault();
     modal1.style.display = "block";
   });
-
   document.body.insertAdjacentHTML("beforeend", footer);
+  
+  const token = window.localStorage.getItem("token");
   const connexionReussi = window.localStorage.getItem("isLoggedIn");
   if (connexionReussi === "true") {
     const hideOnLoginElements = document.querySelectorAll(".hide-on-login");
@@ -223,6 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
       imageElement.remove();
     }
   }
+  // Ajouter une image
   const btnAjoutPhoto = document.querySelector(".btn-ajout-photo");
   btnAjoutPhoto.addEventListener("click", function () {
     modal2.style.display = "block";
@@ -251,14 +252,14 @@ document.addEventListener("DOMContentLoaded", function () {
       modal2.style.display = "none";
     }
   });
-
+//  fonction pour envoyer la nouvelle image 
   const uploadImageInput = document.getElementById("upload-image");
   const selectedImageElement = document.getElementById("selected-image");
-
+// Vérification du format de l'image
   uploadImageInput.addEventListener("change", function () {
     const selectedImage = uploadImageInput.files[0];
     if (selectedImage) {
-      // Vérification du format de l'image
+      
       if (!/\.png$|\.jpg$/i.test(selectedImage.name)) {
         errorMessageElement.textContent =
           "Le format de l'image doit être .png ou .jpg";
@@ -284,13 +285,13 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const submitButton = document.querySelector(".submit-button");
-  submitButton.addEventListener("click", async () => {
+  submitButton.addEventListener("click", async (event) => {
+  event.preventDefault();/*Empécher le chargement de la page*/
     const title = document.getElementById("titre").value;
     const categoryId = document.getElementById("categorie").value;
     console.log(title, categoryId);
     const uploadImageInput = document.getElementById("upload-image");
-
-    console.log(token);
+    // console.log(token);
     // Vérification des champs obligatoires
     if (!title || !categoryId || !uploadImageInput.files[0]) {
       errorMessageElement.textContent =
@@ -307,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(formData);
 
     try {
-
+// Une requete pour envois de la nouvelle image
       const response = await fetch("http://localhost:5678/api/works", {
         method: "POST",
         headers: {
@@ -360,72 +361,63 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   // Requete galerie accueil et catégories
-  Promise.all([
-    fetch("http://localhost:5678/api/works").then((response) =>
-      response.json()
-    ),
-    fetch("http://localhost:5678/api/categories").then((response) =>
-      response.json()
-    ),
-  ])
-    .then((data) => {
-      const worksData = data[0];
-      const categoriesData = data[1];
+  fetch("http://localhost:5678/api/works")
+  .then((response) => response.json())
+  .then((worksData) => {
+    fetch("http://localhost:5678/api/categories")
+      .then((response) => response.json())
+      .then((categoriesData) => {
+        const galleryModal = document.querySelector(".gallery");
+        galleryModal.innerHTML = ""; // Efface le contenu 
 
-      const galleryModal = document.querySelector(".gallery");
-      galleryModal.innerHTML = ""; // Efface le contenu actuel de la galerie
-
-      worksData.forEach((gallery) => {
-        const figure = document.createElement("figure");
-        figure.dataset.imageId = gallery.id;
-        const img = document.createElement("img");
-        img.src = gallery.imageUrl;
-        img.alt = gallery.title;
-        const figcaption = document.createElement("figcaption");
-        figcaption.textContent = gallery.title;
-        figure.appendChild(img);
-        figure.appendChild(figcaption);
-        figure.dataset.categoryId = gallery.categoryId;
-        galleryModal.appendChild(figure);
-      });
-
-      const btnCategories = document.getElementById("btn-categories");
-
-      const allButton = document.createElement("button");
-      allButton.textContent = "Tous";
-      allButton.dataset.categoryId = "all";
-      allButton.addEventListener("click", () => {
-        const galleryItems = document.querySelectorAll(".gallery figure");
-        galleryItems.forEach((item) => {
-          item.style.display = "block";
+        worksData.forEach((gallery) => {
+          const figure = document.createElement("figure");
+          figure.dataset.imageId = gallery.id;
+          const img = document.createElement("img");
+          img.src = gallery.imageUrl;
+          img.alt = gallery.title;
+          const figcaption = document.createElement("figcaption");
+          figcaption.textContent = gallery.title;
+          figure.appendChild(img);
+          figure.appendChild(figcaption);
+          figure.dataset.categoryId = gallery.categoryId;
+          galleryModal.appendChild(figure);
         });
-      });
 
-      btnCategories.appendChild(allButton);
-
-      categoriesData.forEach((category) => {
-        const button = document.createElement("button");
-        button.textContent = category.name;
-        button.dataset.categoryId = category.id;
-        button.addEventListener("click", () => {
-          const categoryId = category.id;
-          const galleryItems = document.querySelectorAll(".gallery figure");
-          galleryItems.forEach((item) => {
-            const itemCategoryId = item.dataset.categoryId;
-            if (
-              itemCategoryId === categoryId.toString() ||
-              categoryId === "all"
-            ) {
-              item.style.display = "block";
-            } else {
-              item.style.display = "none";
-            }
+        // Création des boutons de catégorie
+        const btnCategoriesContainer = document.getElementById("btn-categories");
+        const categories = [
+          { name: "Tous", value: 0 },
+          { name: "Objet", value: 1 },
+          { name: "Appartements", value: 2 },
+          { name: "Hotels & restaurants", value: 3 },
+        ];
+        
+        categories.forEach((category) => {
+          const button = document.createElement("button");
+          button.textContent = category.name;
+          button.dataset.categoryValue = category.value;
+          button.addEventListener("click", () => {
+            const categoryValue = parseInt(button.dataset.categoryValue);
+            const galleryItems = document.querySelectorAll(".gallery figure");
+            galleryItems.forEach((item) => {
+              const itemCategoryValue = parseInt(item.dataset.categoryId);
+              if (itemCategoryValue === categoryValue || categoryValue === 0) {
+                item.style.display = "block";
+              } else {
+                item.style.display = "none";
+              }
+            });
           });
+          btnCategoriesContainer.appendChild(button);
         });
-        btnCategories.appendChild(button);
+      })
+      .catch((error) => {
+        console.log("Erreur lors de la récupération des catégories :", error);
       });
-    })
-    .catch((error) => {
-      console.log("Une erreur s'est produite :", error);
-    });
+  })
+  .catch((error) => {
+    // console.log("Erreur lors de la récupération des images :", error);
+  });
+
 });
