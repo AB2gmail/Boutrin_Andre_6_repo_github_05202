@@ -317,18 +317,17 @@ document.addEventListener("DOMContentLoaded", function () {
         body: formData,
       });
 
-      if (response.ok) {
-        const newImage = await response.json();
-        ajouterImageAGalerie(title, categoryId, newImage.imageUrl);
-
-        //  verification
-        rectangleImage.src = newImage.imageUrl;
-        rectangleImage.alt = title;
-        // Fermez la modal
-        modal2.style.display = "";
-      } else {
-        console.error("Échec de l'envoi de l'image");
-      }
+      // if (response.ok) {
+      //   // const newImage = await response.json();
+      //   // ajouterImageAGalerie(title, categoryId, newImage.imageUrl);
+      //   // //  verification
+      //   // rectangleImage.src = newImage.imageUrl;
+      //   // rectangleImage.alt = title;
+      //   // // Fermez la modal
+      //   // modal2.style.display = "";
+      // } else {
+      //   console.error("Échec de l'envoi de l'image");
+      // }
     } catch (error) {
       console.error("Erreur inattendue:", error);
     }
