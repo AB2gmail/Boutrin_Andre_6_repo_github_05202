@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const openModalPortfolio = document.querySelector(".open-modal-portfolio");
-  openModalPortfolio.addEventListener("click", function (event) {
+   openModalPortfolio.addEventListener("click", function (event) {
     event.preventDefault();
     modal1.style.display = "block";
   });
@@ -308,7 +308,6 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.append("category", categoryId);
     formData.append("userId", 1);
 
-
     try {
       // Une requête pour envoyer la nouvelle image
       const response = await fetch("http://localhost:5678/api/works", {
@@ -420,5 +419,4 @@ document.addEventListener("DOMContentLoaded", function () {
   .catch((error) => {
     // console.log("Erreur lors de la récupération des images :", error);
   });
-
 });
