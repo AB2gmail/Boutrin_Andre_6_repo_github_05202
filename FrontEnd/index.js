@@ -146,12 +146,12 @@ document.addEventListener("DOMContentLoaded", function () {
       <input type="text" id="titre" class="input-field" placeholder="Ajouter un titre">
 
       <!-- Champ Catégories -->
-      <label for="categorie" class="titre">Catégories</label>
-      <select id="categorie" class="select-field">
+      <label for="categorie-ajout" class="titre">Catégories</label>
+      <select  name="category" id="categorie-ajout" class="select-field">
         <option value="" disabled selected>Sélectionner une catégorie</option>
-        <option value="cat1">Catégorie 1</option>
-        <option value="cat2">Catégorie 2</option>
-        <option value="cat3">Catégorie 3</option>
+        <option value="1">Catégorie 1</option>
+        <option value="2">Catégorie 2</option>
+        <option value="3">Catégorie 3</option>
       </select>
     </div>
     <hr class="separator2">
@@ -216,6 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         console.error("Erreur lors de la suppression de l'image :", error);
       });
+      
   }
   function removeImageFromPage(imageId) {
     const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
@@ -252,6 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
       modal2.style.display = "none";
     }
   });
+  
 //  fonction pour envoyer la nouvelle image 
   const uploadImageInput = document.getElementById("upload-image");
   const selectedImageElement = document.getElementById("selected-image");
@@ -288,8 +290,8 @@ document.addEventListener("DOMContentLoaded", function () {
   submitButton.addEventListener("click", async (event) => {
   event.preventDefault();/*Empécher le chargement de la page*/
     const title = document.getElementById("titre").value;
-    const categoryId = document.getElementById("categorie").value;
-    console.log(title, categoryId);
+    const categoryId = document.getElementById("categorie-ajout").value;
+    // console.log(title, categoryId);
     const uploadImageInput = document.getElementById("upload-image");
     // console.log(token);
     // Vérification des champs obligatoires
@@ -303,12 +305,12 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.append("image", uploadImageInput.files[0]);
     formData.append("title", title);
     formData.append("token", token);
-    formData.append("category", "1");
+    formData.append("category", categoryId);
     formData.append("userId", 1);
-    console.log(formData);
+
 
     try {
-// Une requete pour envois de la nouvelle image
+      // Une requête pour envoyer la nouvelle image
       const response = await fetch("http://localhost:5678/api/works", {
         method: "POST",
         headers: {
@@ -316,22 +318,22 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         body: formData,
       });
-
-      // if (response.ok) {
-      //   // const newImage = await response.json();
-      //   // ajouterImageAGalerie(title, categoryId, newImage.imageUrl);
-      //   // //  verification
-      //   // rectangleImage.src = newImage.imageUrl;
-      //   // rectangleImage.alt = title;
-      //   // // Fermez la modal
-      //   // modal2.style.display = "";
-      // } else {
-      //   console.error("Échec de l'envoi de l'image");
-      // }
+    
+      if (response.ok) {
+        const newImage = await response.json();
+        // Ajoutez une console.log pour indiquer que l'image a été ajoutée avec succès
+        console.log(`L'image a été ajoutée avec succès. ID de l'image : ${newImage.id}`);
+        // Autres actions ici si nécessaire
+      } else {
+        console.error("Échec de l'envoi de l'image");
+      }
     } catch (error) {
-      console.error("Erreur inattendue:", error);
+      console.error("Erreur inattendue :", error);
     }
+
+
   });
+
 
   const errorMessageElement = document.getElementById("error-message");
   // Requete gallery modal
@@ -353,10 +355,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     })
     .catch((error) => {
-      console.log(
-        "Une erreur s'est produite lors de la récupération des galeries:",
-        error
-      );
+      // console.log(
+      //   "Une erreur s'est produite lors de la récupération des galeries:",
+      //   error
+      // );
     });
 
   // Requete galerie accueil et catégories
@@ -412,7 +414,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       })
       .catch((error) => {
-        console.log("Erreur lors de la récupération des catégories :", error);
+        // console.log("Erreur lors de la récupération des catégories :", error);
       });
   })
   .catch((error) => {
